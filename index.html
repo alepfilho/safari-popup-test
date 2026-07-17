@@ -48,10 +48,12 @@
         const logDiv = document.getElementById('log');
         const urlParaAbrir = 'https://www.google.com';
 
+        const janelaFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=yes,status=yes,resizable=yes,scrollbars=yes';
+
         // 1. Método Síncrono: Disparado direto na pilha de execução do clique
         function abrirSincrono() {
             logDiv.innerText = 'Abrindo síncrono imediatamente...';
-            const novaJanela = window.open(urlParaAbrir, '_blank');
+            const novaJanela = window.open(urlParaAbrir, 'popupTest', janelaFeatures);
             
             if (!novaJanela) {
                 logDiv.innerText = 'Status: Bloqueado pelo navegador!';
@@ -72,7 +74,7 @@
             await esperarTempo(1500);
             
             logDiv.innerText = 'Tentando abrir popup assíncrono...';
-            const novaJanela = window.open(urlParaAbrir, '_blank');
+            const novaJanela = window.open(urlParaAbrir, 'popupTest', janelaFeatures);
             
             if (!novaJanela) {
                 logDiv.innerText = 'Status: Bloqueado pelo Safari!';
