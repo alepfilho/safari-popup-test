@@ -83,6 +83,7 @@
 
         // 2. Método Assíncrono: abre aba vazia no clique, espera 1.5s, depois troca a URL
         async function abrirAssincrono() {
+await esperarTempo(1500);
             logDiv.innerText = 'Abrindo aba vazia (async)...';
             const novaJanela = window.open('about:blank', 'popupTest', janelaFeatures);
 
