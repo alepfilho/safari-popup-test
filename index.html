@@ -40,47 +40,67 @@
     <h1>Teste de Popup (Safari iOS)</h1>
     
     <button class="btn-sync" onclick="abrirSincrono()">1. Abrir Síncrono (Funciona)</button>
-    <button class="btn-async" onclick="abrirAssincrono()">2. Abrir Assíncrono (Bloqueia)</button>
+    <button class="btn-async" onclick="abrirAssincrono()">2. Abrir Assíncrono (aba vazia + URL)</button>
 
     <div class="log" id="log">Clique em um dos botões...</div>
 
     <script>
         const logDiv = document.getElementById('log');
-        const urlParaAbrir = 'https://www.google.com';
+        const urlRede = 'https://www.userede.com.br/';
 
         const janelaFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=yes,status=yes,resizable=yes,scrollbars=yes';
 
-        // 1. Método Síncrono: Disparado direto na pilha de execução do clique
-        function abrirSincrono() {
-            logDiv.innerText = 'Abrindo síncrono imediatamente...';
-            const novaJanela = window.open(urlParaAbrir, 'popupTest', janelaFeatures);
-            
-            if (!novaJanela) {
-                logDiv.innerText = 'Status: Bloqueado pelo navegador!';
-            } else {
-                logDiv.innerText = 'Status: Aberto com sucesso!';
-            }
-        }
-
-        // Simulação de uma promise/delay de 1.5 segundos
         function esperarTempo(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // 2. Método Assíncrono: Ocorre a quebra de contexto após o await
-        async function abrirAssincrono() {
-            logDiv.innerText = 'Aguardando 1.5 segundos...';
-            
+        // Atualiza a URL da janela de forma async
+        async function atualizarUrl(janela) {
             await esperarTempo(1500);
-            
-            logDiv.innerText = 'Tentando abrir popup assíncrono...';
-            const novaJanela = window.open(urlParaAbrir, 'popupTest', janelaFeatures);
-            
+
+            if (!janela || janela.closed) {
+                logDiv.innerText = 'Status: Janela foi fechada antes da navegação.';
+                return;
+            }
+
+            janela.location.href = urlRede;
+            logDiv.innerText = 'Status: URL alterada para ' + urlRede;
+        }
+
+        // 1. Método Síncrono: abre about:blank no clique, depois atualiza a URL async
+        function abrirSincrono() {
+            logDiv.innerText = 'Abrindo síncrono (em branco)...';
+            const novaJanela = window.open('about:blank', 'popupTest', janelaFeatures);
+
+            if (!novaJanela) {
+                logDiv.innerText = 'Status: Bloqueado pelo navegador!';
+                return;
+            }
+
+            logDiv.innerText = 'Status: Janela em branco aberta. Atualizando URL...';
+            atualizarUrl(novaJanela);
+        }
+
+        // 2. Método Assíncrono: abre aba vazia no clique, espera 1.5s, depois troca a URL
+        async function abrirAssincrono() {
+            logDiv.innerText = 'Abrindo aba vazia (async)...';
+            const novaJanela = window.open('about:blank', 'popupTest', janelaFeatures);
+
             if (!novaJanela) {
                 logDiv.innerText = 'Status: Bloqueado pelo Safari!';
-            } else {
-                logDiv.innerText = 'Status: Aberto (raro no iOS)';
+                return;
             }
+
+            logDiv.innerText = 'Aba vazia aberta. Aguardando 1.5s...';
+            await esperarTempo(1500);
+
+            if (!novaJanela || novaJanela.closed) {
+                logDiv.innerText = 'Status: Janela foi fechada antes da navegação.';
+                return;
+            }
+
+            novaJanela.location.href = urlRede;
+            logDiv.innerText = 'Status: URL alterada para ' + urlRede;
         }
     </script>
 </body>
